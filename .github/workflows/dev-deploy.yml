@@ -41,7 +41,7 @@ jobs:
         dotnet ef database update \
           --project ./NewWebAPICore/NewWebAPICore.csproj \
           --startup-project ./NewWebAPICore/NewWebAPICore.csproj \
-          --connection "${{ secrets.DB_CONNECTION_STRING }}"
+          --connection "${{secrets.DB_CONNECTION_STRING}}"
 
     # 🚀 Deploy
     - name: Deploy to Azure Dev Web App
