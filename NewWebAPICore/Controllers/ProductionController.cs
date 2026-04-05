@@ -35,7 +35,8 @@ public class ProductionController : ControllerBase
                                                     {
                                                         Id = pp.Id,
                                                         Name = pp.Name,
-                                                        Price = pp.Price
+                                                        Price = pp.Price,
+                                                        quantity = pp.Quantity
                                                     }).ToListAsync();
 
         return Ok(new APIResponseDTO_s<IEnumerable<CreateproductDTO>>(
@@ -56,7 +57,8 @@ public class ProductionController : ControllerBase
             {
                 Id = pp.Id,
                 Name = pp.Name,
-                Price = pp.Price
+                Price = pp.Price,
+                quantity = pp.Quantity
             }).SingleAsync();
 
         if (product == null)
@@ -95,6 +97,7 @@ public class ProductionController : ControllerBase
         {
             Name = dto.Name,
             Price = dto.Price,
+            Quantity = dto.quantity,
             UserId = userId
         };
 
@@ -135,6 +138,7 @@ public class ProductionController : ControllerBase
 
         dbProduct.Name = product.Name;
         dbProduct.Price = product.Price;
+        dbProduct.Quantity = product.quantity;
 
         await _context.SaveChangesAsync();
 
@@ -233,11 +237,5 @@ public class ProductionController : ControllerBase
     public IActionResult Datetime()
     {
         return Ok("Current Time" + DateTime.Now);
-    }
-
-    [HttpGet("CheckAPI")]
-    public IActionResult checkapi()
-    {
-        return Ok("API Working");
-    }
+    }    
 }

@@ -8,6 +8,7 @@ namespace WebAPICore.Model
         [Key]
         public int Id { get; set; }
         public string Name { get; set; }
+        public Nullable<int> Quantity { get; set; }
         public decimal Price { get; set; }
         public int UserId { get; set; }
         public User User { get; set; }
