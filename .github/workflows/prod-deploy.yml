@@ -27,14 +27,22 @@ jobs:
     - name: Publish
       run: dotnet publish -c Release -o publish
       
+    # ✅ Install EF Tool
     - name: Install EF Tool
       run: dotnet tool install --global dotnet-ef
 
+    # ✅ Add EF Tool to PATH
     - name: Add .NET tools to PATH
       run: echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
 
+    # 🔥 DB Migration (FIXED CORRECTLY)
     - name: Run DB Migration (PROD)
-      run: dotnet ef database update --connection "${{ secrets.DB_CONNECTION_STRING }}"
+      run: |
+        dotnet ef database update \
+          --project ./NewWebAPICore/NewWebAPICore.csproj \
+          --startup-project ./NewWebAPICore/NewWebAPICore.csproj
+      env:
+        ConnectionStrings__DefaultConnection: ${{ secrets.DB_CONNECTION_STRING }}
 
     - name: Deploy to Azure Production Web App
       uses: azure/webapps-deploy@v2
