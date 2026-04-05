@@ -234,4 +234,10 @@ public class ProductionController : ControllerBase
     {
         return Ok("Current Time" + DateTime.Now);
     }
+
+    [HttpGet("CheckAPI")]
+    public IActionResult checkapi()
+    {
+        return Ok("API Working");
+    }
 }
