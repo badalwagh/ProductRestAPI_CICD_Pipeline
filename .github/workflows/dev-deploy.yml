@@ -28,6 +28,15 @@ jobs:
     - name: Publish
       run: dotnet publish -c Release -o publish
 
+    - name: Install EF Tool
+      run: dotnet tool install --global dotnet-ef
+
+    - name: Add .NET tools to PATH
+      run: echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
+
+    - name: Run DB Migration (DEV)
+      run: dotnet ef database update --connection "${{ secrets.DB_CONNECTION_STRING }}"
+
     - name: Deploy to Azure Dev Web App
       uses: azure/webapps-deploy@v2
       with:
