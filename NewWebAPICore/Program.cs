@@ -58,6 +58,7 @@ builder.Services.AddScoped<AuditLogFilter>();
 builder.Services.AddScoped<CustomResultFilter>();
 builder.Services.AddScoped<ExceptionFilter>();
 builder.Services.AddApplicationInsightsTelemetry();
+
 builder.Services.AddDbContext<AppDbContext>(x => x.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
     sqlOptions =>
     {
