@@ -5,30 +5,70 @@ namespace NewWebAPICore.Service
 {
     public class BlobService
     {
-        private readonly string _connectionString;
-        private readonly string _containerName;
+        private readonly BlobContainerClient _containerClient;
 
-        public BlobService(IConfiguration config)
+        public BlobService(string connectionString)
         {
-            _connectionString = config["AzureBlobStorage:ConnectionString"];
-            _containerName = config["AzureBlobStorage:ContainerName"];
+            if (string.IsNullOrEmpty(connectionString))
+                throw new ArgumentException("Azure Blob Storage connection string is required");
+
+            var blobServiceClient = new BlobServiceClient(connectionString);
+            // Use your container name (e.g., "documents", "uploads", etc.)
+            _containerClient = blobServiceClient.GetBlobContainerClient("documents");
         }
 
+        // Upload file to blob storage
         public async Task<string> UploadFileAsync(IFormFile file)
         {
-            var blobContainerClient = new BlobContainerClient(_connectionString, _containerName);
-            await blobContainerClient.CreateIfNotExistsAsync(PublicAccessType.Blob);
+            if (file == null || file.Length == 0)
+                throw new ArgumentException("File is required");
 
-            string fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
-
-            var blobClient = blobContainerClient.GetBlobClient(fileName);
-
-            using (var stream = file.OpenReadStream())
+            try
             {
-                await blobClient.UploadAsync(stream, true);
-            }
+                string blobName = $"{Guid.NewGuid()}_{file.FileName}";
+                var blobClient = _containerClient.GetBlobClient(blobName);
 
-            return blobClient.Uri.ToString();
+                using (var stream = file.OpenReadStream())
+                {
+                    await blobClient.UploadAsync(stream, overwrite: true);
+                }
+
+                return blobClient.Uri.ToString();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error uploading file to blob storage: {ex.Message}");
+            }
+        }
+
+        // Download file from blob storage
+        public async Task<Stream> DownloadFileAsync(string blobName)
+        {
+            try
+            {
+                var blobClient = _containerClient.GetBlobClient(blobName);
+                var download = await blobClient.DownloadAsync();
+                return download.Value.Content;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error downloading file from blob storage: {ex.Message}");
+            }
+        }
+
+        // Delete file from blob storage
+        public async Task<bool> DeleteFileAsync(string blobName)
+        {
+            try
+            {
+                var blobClient = _containerClient.GetBlobClient(blobName);
+                await blobClient.DeleteAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error deleting file from blob storage: {ex.Message}");
+            }
         }
     }
 }
