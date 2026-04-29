@@ -59,7 +59,8 @@ builder.Services.AddScoped<BlobService>(sp =>
 {
     var config = sp.GetRequiredService<IConfiguration>();
     var connectionString = config["ConnectionString"];
-    return new BlobService(connectionString);
+    var container = config["ContainerName"];
+    return new BlobService(connectionString, container);
 });
 
 
