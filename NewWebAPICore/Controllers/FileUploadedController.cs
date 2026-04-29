@@ -17,21 +17,56 @@ namespace NewWebAPICore.Controllers
             _blobService = blobService;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Upload(List<IFormFile> files)
+        // Upload file to blob storage
+        [HttpPost("upload")]
+        public async Task<IActionResult> UploadFile(IFormFile file)
         {
-            if (files == null || files.Count == 0)
-                return BadRequest("No files uploaded");
-
-            List<string> urls = new List<string>();
-
-            foreach (var file in files)
+            try
             {
-                var url = await _blobService.UploadFileAsync(file);
-                urls.Add(url);
-            }
+                if (file == null || file.Length == 0)
+                    return BadRequest("File is required");
 
-            return Ok(urls);
+                var fileUrl = await _blobService.UploadFileAsync(file);
+
+                return Ok(new
+                {
+                    success = true,
+                    message = "File uploaded successfully",
+                    fileUrl = fileUrl,
+                    fileName = file.FileName
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    success = false,
+                    message = ex.Message
+                });
+            }
+        }
+
+        // Delete file from blob storage
+        [HttpDelete("delete/{fileName}")]
+        public async Task<IActionResult> DeleteFile(string fileName)
+        {
+            try
+            {
+                await _blobService.DeleteFileAsync(fileName);
+                return Ok(new
+                {
+                    success = true,
+                    message = "File deleted successfully"
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    success = false,
+                    message = ex.Message
+                });
+            }
         }
     }
 }

@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using NewWebAPICore.Filters;
 using NewWebAPICore.Middleware;
+using NewWebAPICore.Service;
 using System.Security.Claims;
 using System.Text;
 using WebAPICore.Data;
@@ -52,6 +53,15 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
+
+
+builder.Services.AddScoped<BlobService>(sp =>
+{
+    var config = sp.GetRequiredService<IConfiguration>();
+    var connectionString = config["ConnectionString"];
+    return new BlobService(connectionString);
+});
+
 
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<AuditLogFilter>();
