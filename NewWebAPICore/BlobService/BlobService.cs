@@ -7,14 +7,14 @@ namespace NewWebAPICore.Service
     {
         private readonly BlobContainerClient _containerClient;
 
-        public BlobService(string connectionString)
+        public BlobService(string connectionString, string containername)
         {
             if (string.IsNullOrEmpty(connectionString))
                 throw new ArgumentException("Azure Blob Storage connection string is required");
 
             var blobServiceClient = new BlobServiceClient(connectionString);
             
-            _containerClient = blobServiceClient.GetBlobContainerClient("web");
+            _containerClient = blobServiceClient.GetBlobContainerClient(containername);
         }
 
         // Upload file to blob storage
