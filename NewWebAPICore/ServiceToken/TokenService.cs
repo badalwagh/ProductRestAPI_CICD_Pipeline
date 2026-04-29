@@ -14,7 +14,6 @@ namespace WebAPICore.ServiceToken
         {
             _config = config;
         }
-
         public string CreateToken(User user)
         {
             var claims = new List<Claim>
