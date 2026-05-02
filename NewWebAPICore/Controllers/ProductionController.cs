@@ -16,10 +16,12 @@ using WebAPICore.Model;
 public class ProductionController : ControllerBase
 {
     private readonly AppDbContext _context;
+    private readonly ILogger<ProductionController> _logger;
 
-    public ProductionController(AppDbContext context)
+    public ProductionController(AppDbContext context, ILogger<ProductionController> logger)
     {
         _context = context;
+        _logger = logger;
     }
 
     [HttpGet]
@@ -108,7 +110,7 @@ public class ProductionController : ControllerBase
             nameof(GetById),
              new CreateproductDTO { Id = product.Id },
             new APIResponseDTO_s<CreateproductDTO>(
-                true, "Product created successfully", new CreateproductDTO { Id = product.Id, Name = product.Name, Price = product.Price }));
+                true, "Product created successfully", new CreateproductDTO { Id = product.Id, Name = product.Name, Price = product.Price, quantity = product.Quantity }));
     }
 
     [Authorize(Roles = "Admin,Manager")]
